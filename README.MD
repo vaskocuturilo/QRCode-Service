@@ -1,3 +1,3 @@
-### This is Spring boot service for creating QA CODE. 
+### This is Spring boot service for creating QR CODE. 
 
 
