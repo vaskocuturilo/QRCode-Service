@@ -1,32 +1,30 @@
 package site.engineertest.qrcodeservice.controller;
 
-import com.google.zxing.WriterException;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import site.engineertest.qrcodeservice.base.MainFunctionality;
 
-import java.io.IOException;
-
-@Controller
+@RestController
+@RequestMapping("/api/v1")
 public class MainController {
-
-    private static final String IMAGE_PATH = "./src/main/resources/static/example.png";
+    private byte[] qrImage;
 
     @GetMapping("/create")
-    public String createNewQRCode(@RequestParam String param, Model model) {
+    public ResponseEntity<?> createNewQRCode(@RequestParam String code, Model model) {
+        MainFunctionality mainFunctionality = new MainFunctionality();
         try {
-            MainFunctionality.createQACode(param, 250, 250, IMAGE_PATH);
-            model.addAttribute("portal", param);
-        } catch (WriterException exception) {
-            exception.printStackTrace();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+            qrImage = mainFunctionality.getNewQRCode(code, 250, 250);
+            model.addAttribute("portal", code);
 
-        return "index";
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qrImage);
+
+        } catch (Exception exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 }
